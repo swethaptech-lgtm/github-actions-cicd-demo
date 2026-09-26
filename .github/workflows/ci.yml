@@ -1,4 +1,4 @@
-```yaml
+
 name: Node.js CI
 
 on:
@@ -53,4 +53,4 @@ jobs:
         run: |
           docker push \
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
-```
+
