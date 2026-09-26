@@ -1,4 +1,3 @@
-
 name: Node.js CI
 
 on:
@@ -54,3 +53,23 @@ jobs:
           docker push \
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
 
+  deploy:
+    runs-on: self-hosted
+    needs: ci
+
+    steps:
+      - name: Check Kubernetes connection
+        run: |
+          kubectl config current-context
+          kubectl get nodes
+
+      - name: Deploy to Kubernetes
+        run: |
+          kubectl set image deployment/github-actions-demo \
+            github-actions-demo=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} \
+            -n github-actions-demo
+
+      - name: Wait for rollout
+        run: |
+          kubectl rollout status deployment/github-actions-demo \
+            -n github-actions-demo
